@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\BlogPost;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -38,22 +39,28 @@ class BlogController extends AbstractController
 
     /**
      * @Route("/post/{id}", name="blog_by_id", requirements={"id"="\d+"})
+     * @ParamConverter("post", class="App:BlogPost")
      */
-    public function post($id)
+    public function post($post)
     {
-        return $this->json(
-            $this->getDoctrine()->getRepository(BlogPost::class)->find($id)
-        );
+//        return $this->json(
+//            $this->getDoctrine()->getRepository(BlogPost::class)->find($id)
+//        );
+
+        return $this->json($post);
     }
 
     /**
-     * @Route("/post/{slug}", name="blog_by_slug", requirements={})
+     * @Route("/post/{slug}", name="blog_by_slug")
+     * @ParamConverter("post", options={"mapping": {"slug": "slug"}})
      */
-    public function postBySlug($slug)
+    public function postBySlug(BlogPost $post)
     {
-        return $this->json(
-            $this->getDoctrine()->getRepository(BlogPost::class)->findOneBy(['slug' => $slug])
-        );
+//        return $this->json(
+//            $this->getDoctrine()->getRepository(BlogPost::class)->findOneBy(['slug' => $slug])
+//        );
+
+        return $this->json($post);
     }
 
     /**
