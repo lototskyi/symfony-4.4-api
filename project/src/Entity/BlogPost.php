@@ -10,7 +10,10 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=BlogPostRepository::class)
- * @ApiResource()
+ * @ApiResource(
+ *     itemOperations={"get"},
+ *     collectionOperations={"get"}
+ * )
  */
 class BlogPost
 {
@@ -37,7 +40,7 @@ class BlogPost
     private $content;
 
     /**
-     * @ORM\ManyToOne(targetEntity="APP\Entity\User", inversedBy="posts")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="posts")
      * @ORM\JoinColumn(nullable=false)
      */
     private $author;
