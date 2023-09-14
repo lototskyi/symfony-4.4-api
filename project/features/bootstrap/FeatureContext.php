@@ -2,6 +2,7 @@
 
 
 use App\DataFixtures\AppFixtures;
+use Behat\Gherkin\Node\PyStringNode;
 use Behatch\Context\RestContext;
 use Behatch\HttpCall\Request;
 use Coduo\PHPMatcher\Factory\SimpleFactory;
@@ -72,6 +73,17 @@ class FeatureContext extends RestContext
         $this->request->setHttpheader(
             'Authorization',
             'Bearer '.$token
+        );
+    }
+
+    /**
+     * @Then the JSON matches expected template
+     */
+    public function theJsonMatchesExpectedTemplate(PyStringNode $json)
+    {
+        $actual = $this->request->getContent();
+        $this->assertTrue(
+            $this->matcher->match($actual, $json->getRaw())
         );
     }
 
