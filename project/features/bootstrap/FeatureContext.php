@@ -82,6 +82,7 @@ class FeatureContext extends RestContext
     public function theJsonMatchesExpectedTemplate(PyStringNode $json)
     {
         $actual = $this->request->getContent();
+        var_dump($actual);
         $this->assertTrue(
             $this->matcher->match($actual, $json->getRaw())
         );
