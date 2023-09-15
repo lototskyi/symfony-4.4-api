@@ -109,4 +109,15 @@ class FeatureContext extends RestContext
             $this->fixtures
         ]);
     }
+
+    /**
+     * @BeforeScenario @image
+     */
+    public function prepareImages()
+    {
+        copy(
+            __DIR__ . '/../fixtures/test.png',
+            __DIR__ . '/../fixtures/files/test.png'
+        );
+    }
 }
