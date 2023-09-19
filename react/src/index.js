@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import {applyMiddleware, createStore} from "redux";
 import createHistory from "history/createBrowserHistory";
 import {ConnectedRouter} from "react-router-redux";
-import {Route, Switch} from "react-router";
+import {Route} from "react-router";
 import {Provider} from "react-redux";
 import App from "./components/App";
 import reducer from "./reducer";
