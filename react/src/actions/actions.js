@@ -11,6 +11,7 @@ import {
     COMMENT_LIST_REQUEST,
     COMMENT_LIST_ERROR, COMMENT_LIST_RECEIVED, COMMENT_LIST_UNLOAD, USER_LOGIN_SUCCESS
 } from "./constants";
+import {SubmissionError} from "redux-form";
 
 
 export const blogPostListRequest = () => ({
@@ -100,7 +101,11 @@ export const userLoginAttempt = (username, password) => {
     return (dispatch) => {
         return requests.post('/login_check', {username, password}, false).then(
             response => dispatch(userLoginSuccess(response.token, response.id))
-        ).catch(error => console.log(error));
+        ).catch(error => {
+            throw new SubmissionError({
+                _error: 'Username or password is invalid'
+            })
+        });
     }
 };
 
