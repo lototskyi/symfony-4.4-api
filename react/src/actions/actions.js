@@ -9,7 +9,12 @@ import {
     BLOG_POST_RECEIVED,
     BLOG_POST_UNLOAD,
     COMMENT_LIST_REQUEST,
-    COMMENT_LIST_ERROR, COMMENT_LIST_RECEIVED, COMMENT_LIST_UNLOAD, USER_LOGIN_SUCCESS
+    COMMENT_LIST_ERROR,
+    COMMENT_LIST_RECEIVED,
+    COMMENT_LIST_UNLOAD,
+    USER_LOGIN_SUCCESS,
+    USER_PROFILE_REQUEST,
+    USER_PROFILE_ERROR, USER_PROFILE_RECEIVED, USER_SET_ID
 } from "./constants";
 import {SubmissionError} from "redux-form";
 
@@ -108,6 +113,34 @@ export const userLoginAttempt = (username, password) => {
         });
     }
 };
+
+export const userSetId = (userId) => ({
+    type: USER_SET_ID,
+    userId
+});
+
+export const userProfileRequest = () => ({
+    type: USER_PROFILE_REQUEST,
+});
+
+export const userProfileReceived = (userId, userData) => ({
+    type: USER_PROFILE_RECEIVED,
+    userData,
+    userId
+});
+
+export const userProfileError = () => ({
+    type: USER_PROFILE_ERROR,
+});
+
+export const userProfileFetch = (userId) => {
+    return (dispatch) => {
+        dispatch(userProfileRequest());
+        return requests.get(`/users/${userId}`, true).then(
+            response => dispatch(userProfileReceived(userId, response))
+        ).catch(error => dispatch(userProfileError()));
+    }
+}
 
 export const blogPostAdd = () => ({
     type: BLOG_POST_LIST_ADD,
