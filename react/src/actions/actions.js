@@ -14,9 +14,10 @@ import {
     COMMENT_LIST_UNLOAD,
     USER_LOGIN_SUCCESS,
     USER_PROFILE_REQUEST,
-    USER_PROFILE_ERROR, USER_PROFILE_RECEIVED, USER_SET_ID
+    USER_PROFILE_ERROR, USER_PROFILE_RECEIVED, USER_SET_ID, COMMENT_ADDED
 } from "./constants";
 import {SubmissionError} from "redux-form";
+import {parseApiErrors} from "../apiUtils";
 
 
 export const blogPostListRequest = () => ({
@@ -96,6 +97,26 @@ export const commentListFetch = (id) => {
     }
 };
 
+export const commentAdded = (comment) => ({
+    type: COMMENT_ADDED,
+    comment
+});
+
+export const commentAdd = (comment, blogPostId) => {
+    return (dispatch) => {
+        return requests.post(
+            '/comments',
+            {
+                content: comment,
+                blogPost: `/api/blog_posts/${blogPostId}`
+            }
+        ).then(response => dispatch(commentAdded(response))
+        ).catch(error => {
+            throw new SubmissionError(parseApiErrors(error))
+        });
+    }
+};
+
 export const userLoginSuccess = (token, userId) => ({
     type: USER_LOGIN_SUCCESS,
     token,
@@ -106,7 +127,7 @@ export const userLoginAttempt = (username, password) => {
     return (dispatch) => {
         return requests.post('/login_check', {username, password}, false).then(
             response => dispatch(userLoginSuccess(response.token, response.id))
-        ).catch(error => {
+        ).catch(() => {
             throw new SubmissionError({
                 _error: 'Username or password is invalid'
             })
