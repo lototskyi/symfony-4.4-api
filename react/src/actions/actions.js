@@ -14,7 +14,7 @@ import {
     COMMENT_LIST_UNLOAD,
     USER_LOGIN_SUCCESS,
     USER_PROFILE_REQUEST,
-    USER_PROFILE_ERROR, USER_PROFILE_RECEIVED, USER_SET_ID, COMMENT_ADDED
+    USER_PROFILE_ERROR, USER_PROFILE_RECEIVED, USER_SET_ID, COMMENT_ADDED, USER_LOGOUT
 } from "./constants";
 import {SubmissionError} from "redux-form";
 import {parseApiErrors} from "../apiUtils";
@@ -112,6 +112,9 @@ export const commentAdd = (comment, blogPostId) => {
             }
         ).then(response => dispatch(commentAdded(response))
         ).catch(error => {
+            if (401 === error.response.status) {
+                return dispatch(userLogout());
+            }
             throw new SubmissionError(parseApiErrors(error))
         });
     }
@@ -135,6 +138,12 @@ export const userLoginAttempt = (username, password) => {
     }
 };
 
+export const userLogout = () => {
+    return {
+        type: USER_LOGOUT
+    };
+};
+
 export const userSetId = (userId) => ({
     type: USER_SET_ID,
     userId
@@ -150,8 +159,9 @@ export const userProfileReceived = (userId, userData) => ({
     userId
 });
 
-export const userProfileError = () => ({
+export const userProfileError = (userId) => ({
     type: USER_PROFILE_ERROR,
+    userId
 });
 
 export const userProfileFetch = (userId) => {
@@ -159,7 +169,7 @@ export const userProfileFetch = (userId) => {
         dispatch(userProfileRequest());
         return requests.get(`/users/${userId}`, true).then(
             response => dispatch(userProfileReceived(userId, response))
-        ).catch(error => dispatch(userProfileError()));
+        ).catch(() => dispatch(userProfileError(userId)));
     }
 }
 
