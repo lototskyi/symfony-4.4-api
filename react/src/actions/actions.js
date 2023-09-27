@@ -14,7 +14,7 @@ import {
     COMMENT_LIST_UNLOAD,
     USER_LOGIN_SUCCESS,
     USER_PROFILE_REQUEST,
-    USER_PROFILE_ERROR, USER_PROFILE_RECEIVED, USER_SET_ID, COMMENT_ADDED, USER_LOGOUT
+    USER_PROFILE_ERROR, USER_PROFILE_RECEIVED, USER_SET_ID, COMMENT_ADDED, USER_LOGOUT, BLOG_POST_LIST_SET_PAGE
 } from "./constants";
 import {SubmissionError} from "redux-form";
 import {parseApiErrors} from "../apiUtils";
@@ -34,10 +34,15 @@ export const blogPostListReceived = (data) => ({
     data
 });
 
-export const blogPostListFetch = () => {
+export const blogPostListSetPage = (page) => ({
+    type: BLOG_POST_LIST_SET_PAGE,
+    page
+});
+
+export const blogPostListFetch = (page = 1) => {
     return (dispatch) => {
         dispatch(blogPostListRequest());
-        return requests.get('/blog_posts')
+        return requests.get(`/blog_posts?_page=${page}`)
             .then(response => dispatch(blogPostListReceived(response)))
             .catch(error => dispatch(blogPostListError(error)));
     }
