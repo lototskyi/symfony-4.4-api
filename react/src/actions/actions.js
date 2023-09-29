@@ -14,7 +14,13 @@ import {
     COMMENT_LIST_UNLOAD,
     USER_LOGIN_SUCCESS,
     USER_PROFILE_REQUEST,
-    USER_PROFILE_ERROR, USER_PROFILE_RECEIVED, USER_SET_ID, COMMENT_ADDED, USER_LOGOUT, BLOG_POST_LIST_SET_PAGE
+    USER_PROFILE_ERROR,
+    USER_PROFILE_RECEIVED,
+    USER_SET_ID,
+    COMMENT_ADDED,
+    USER_LOGOUT,
+    BLOG_POST_LIST_SET_PAGE,
+    USER_REGISTER_SUCCESS, USER_CONFIRMATION_SUCCESS, USER_REGISTER_COMPLETE
 } from "./constants";
 import {SubmissionError} from "redux-form";
 import {parseApiErrors} from "../apiUtils";
@@ -147,6 +153,46 @@ export const userLogout = () => {
     return {
         type: USER_LOGOUT
     };
+};
+
+export const userRegisterSuccess = () => {
+    return {
+        type: USER_REGISTER_SUCCESS
+    };
+};
+
+export const userRegister = (username, password, retypedPassword, email, name) => {
+    return (dispatch) => {
+        return requests.post('/users', {username, password, retypedPassword, email, name}, false)
+            .then(() => dispatch(userRegisterSuccess()))
+            .catch(error => {
+                throw new SubmissionError(parseApiErrors(error))
+            });
+    }
+};
+
+export const userConfirmationSuccess = () => {
+    return {
+        type: USER_CONFIRMATION_SUCCESS
+    };
+};
+
+export const userRegisterComplete = () => {
+    return {
+        type: USER_REGISTER_COMPLETE
+    };
+};
+
+export const userConfirm = (confirmationToken) => {
+    return (dispatch) => {
+        return requests.post('/users/confirm', {confirmationToken}, false)
+            .then(() => dispatch(userConfirmationSuccess()))
+            .catch(error => {
+                throw new SubmissionError({
+                    _error: 'Confirmation token is invalid'
+                })
+            });
+    }
 };
 
 export const userSetId = (userId) => ({
