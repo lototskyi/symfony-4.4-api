@@ -3,7 +3,6 @@ import {
     BLOG_POST_LIST_ERROR,
     BLOG_POST_LIST_REQUEST,
     BLOG_POST_LIST_RECEIVED,
-    BLOG_POST_LIST_ADD,
     BLOG_POST_REQUEST,
     BLOG_POST_ERROR,
     BLOG_POST_RECEIVED,
@@ -20,7 +19,12 @@ import {
     COMMENT_ADDED,
     USER_LOGOUT,
     BLOG_POST_LIST_SET_PAGE,
-    USER_REGISTER_SUCCESS, USER_CONFIRMATION_SUCCESS, USER_REGISTER_COMPLETE
+    USER_REGISTER_SUCCESS,
+    USER_CONFIRMATION_SUCCESS,
+    USER_REGISTER_COMPLETE,
+    IMAGE_UPLOADED,
+    IMAGE_UPLOAD_REQUEST,
+    IMAGE_UPLOAD_ERROR, BLOG_POST_FORM_UNLOAD, IMAGE_DELETED, IMAGE_DELETE_REQUEST
 } from "./constants";
 import {SubmissionError} from "redux-form";
 import {parseApiErrors} from "../apiUtils";
@@ -81,14 +85,15 @@ export const blogPostFetch = (id) => {
     }
 };
 
-export const blogPostAdd = (title, content) => {
+export const blogPostAdd = (title, content, images = []) => {
     return (dispatch) => {
         return requests.post(
             '/blog_posts',
             {
                 title,
                 content,
-                slug: title && title.replace(/ /g, "-").toLowerCase()
+                slug: title && title.replace(/ /g, "-").toLowerCase(),
+                images: images.map(image => `/api/images/${image.id}`)
             }
         ).catch(error => {
             if (401 === error.response.status) {
@@ -102,6 +107,10 @@ export const blogPostAdd = (title, content) => {
         });
     }
 };
+
+export const blogPostFormUnload = () => ({
+    type: BLOG_POST_FORM_UNLOAD
+});
 
 export const commentListRequest = () => ({
     type: COMMENT_LIST_REQUEST,
@@ -244,4 +253,53 @@ export const userProfileFetch = (userId) => {
             response => dispatch(userProfileReceived(userId, response))
         ).catch(() => dispatch(userProfileError(userId)));
     }
-}
+};
+
+export const imageUploaded = (data) => {
+    return {
+        type: IMAGE_UPLOADED,
+        image: data
+    }
+};
+
+export const imageUploadRequest = (data) => {
+    return {
+        type: IMAGE_UPLOAD_REQUEST,
+    }
+};
+
+export const imageUploadError = (data) => {
+    return {
+        type: IMAGE_UPLOAD_ERROR,
+    }
+};
+
+export const imageUpload = (file) => {
+    return (dispatch) => {
+        dispatch(imageUploadRequest());
+        return requests.upload('/images', file)
+            .then(response => dispatch(imageUploaded(response)))
+            .catch(() => dispatch(imageUploadError()))
+    }
+};
+
+export const imageDeleteRequest = () => {
+    return {
+        type: IMAGE_DELETE_REQUEST,
+    }
+};
+
+export const imageDelete = (id) => {
+    return (dispatch) => {
+        dispatch(imageDeleteRequest())
+        return requests.delete(`/images/${id}`)
+            .then(() => dispatch(imageDeleted(id)));
+    }
+};
+
+export const imageDeleted = (id) => {
+    return {
+        type: IMAGE_DELETED,
+        imageId: id
+    }
+};
